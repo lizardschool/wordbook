@@ -1,20 +1,14 @@
-from wordbook.infra import db
+from sqlalchemy.orm.exc import NoResultFound
+from . import base
 from wordbook.infra.models.word import Word
 from wordbook.infra.models.translation import Translation
+from wordbook.domain import models as domain
+
+__all__ = ('Repo', )
 
 
-class Repo(object):
-    def __init__(self, session=None):
-        """Repository initialization.
-
-        :param session: SQLAlchemy session class. If none is given, then default from db module will be used.
-        """
-        if session is None:
-            self.session = db.Session()
-        else:
-            self.session = session
-
-    def get_matching(self, language, word_fragment):
+class Repo(base.DbRepo):
+    def get_matching_translations(self, language, word_fragment):
         """Get translations matching given language and fragment of the word.
 
         :param language: ISO639-2 language code; ie. en for English
@@ -28,6 +22,32 @@ class Repo(object):
         ).filter(
             Word.word.ilike('%{}%'.format(word_fragment))
         ).order_by(Word.word, Translation.translation)
-        translations = query.all()
-        # TODO: convert into domain objects
-        return translations
+
+        for translation in query.all():
+            print(translation)
+            yield domain.Translation(
+                from_language=language,
+                to_language='',
+                word=translation.word,
+                translated=translation.word
+            )
+
+    def add_translation(self, translation):
+        assert isinstance(translation, domain.Translation)
+        query = self.session.query(Word).filter_by(
+            language=translation.from_language,
+            word=translation.word)
+
+        try:
+            word = query.one()
+        except NoResultFound:
+            word = Word(
+                language=translation.from_language,
+                word=translation.word,
+                ipa=translation.ipa)
+            self.session.add(word)
+            self.session.commit()
+
+        # trans_query = self.session.query(Translation)
+
+

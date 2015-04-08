@@ -1,4 +1,4 @@
-""""""
+"""Database models for user's list and cards on that list."""
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer

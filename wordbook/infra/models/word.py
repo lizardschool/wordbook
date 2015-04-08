@@ -18,8 +18,13 @@ class Word(db.TimestampMixin, db.LanguageMixin, db.Model):
                                 cascade="all, delete-orphan")
 
     def __repr__(self):
-        return '<Word(language={language_name}, word={word}, ipa={ipa})>'.format(**self)
+        return '<Word(language={language_name}, word={word}, ipa={ipa})>'.format(
+            language_name=self.language_name,
+            word=self.word,
+            ipa=self.ipa
+        )
 
     @property
     def language_name(self):
+        return ''
         return pycountry.languages.get(alpha=self.language).name
