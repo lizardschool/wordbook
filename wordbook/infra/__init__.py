@@ -7,3 +7,5 @@ which is used by Alembic during autogeneration process.
 from .db import Model   # NOQA
 from .models.word import Word   # NOQA
 from .models.translation import Translation     # NOQA
+from .models.wordlist import List   # NOQA
+from .models.wordlist import Card   # NOQA

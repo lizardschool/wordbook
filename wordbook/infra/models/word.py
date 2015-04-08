@@ -2,10 +2,8 @@
 import pycountry
 from sqlalchemy import Column
 from sqlalchemy import UnicodeText
-from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 
-from wordbook.infra import config
 from wordbook.infra import db
 
 __all__ = ('Word', )
@@ -17,7 +15,7 @@ class Word(db.TimestampMixin, db.LanguageMixin, db.Model):
     ipa = Column(UnicodeText)
 
     translations = relationship("Translation", backref='word',
-                                cascade="all, delete, delete-orphan")
+                                cascade="all, delete-orphan")
 
     def __repr__(self):
         return '<Word(language={language_name}, word={word}, ipa={ipa})>'.format(**self)
