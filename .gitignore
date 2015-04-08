@@ -55,3 +55,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# SQLite DB
+wordbook.db
