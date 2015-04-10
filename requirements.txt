@@ -2,6 +2,7 @@ SQLAlchemy==0.9.9
 alembic==0.7.5.post2
 # LGPL v2.1 https://pypi.python.org/pypi/pycountry
 pycountry==1.10
+flask==0.10.1
 
 
 # Dev

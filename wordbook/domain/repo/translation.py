@@ -32,22 +32,54 @@ class Repo(base.DbRepo):
                 translated=translation.word
             )
 
-    def add_translation(self, translation):
-        assert isinstance(translation, domain.Translation)
+    def _get_or_create_word(self, language, word, ipa):
         query = self.session.query(Word).filter_by(
-            language=translation.from_language,
-            word=translation.word)
+            language=language,
+            word=word)
 
         try:
             word = query.one()
         except NoResultFound:
             word = Word(
-                language=translation.from_language,
-                word=translation.word,
-                ipa=translation.ipa)
+                language=language,
+                word=word,
+                ipa=ipa)
+
             self.session.add(word)
             self.session.commit()
 
-        # trans_query = self.session.query(Translation)
+        return word
 
+    def _get_or_create_translation(self, word, to_language, translated):
+        assert isinstance(word, Word)
+        query = self.session.query(Translation).filter_by(
+            word_id=word.id,
+            language=to_language,
+            translation=translated)
 
+        try:
+            translation = query.one()
+        except NoResultFound:
+            translation = Translation(
+                language=to_language,
+                translation=translated,
+                word_id=word.id)
+
+            self.session.add(translation)
+            self.session.commit()
+
+        return translation
+
+    def add_translation(self, translation):
+        assert isinstance(translation, domain.Translation)
+        word = self._get_or_create_word(
+            translation.from_language,
+            translation.word,
+            translation.ipa)
+
+        translation = self._get_or_create_translation(
+            word,
+            translation.to_language,
+            translation.translated)
+
+        return translation
