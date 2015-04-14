@@ -1,0 +1,17 @@
+/* Customize container */
+@media (min-width: 768px) {
+  .container {
+    max-width: 730px;
+  }
+}
+
+
+#word-box .empty-message {
+  padding: 5px 10px;
+  text-align: center;
+}
+
+#word-box .tt-dropdown-menu {
+  max-height: 150px;
+  overflow-y: auto;
+}

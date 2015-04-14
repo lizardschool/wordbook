@@ -11,7 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   dependencies
    migrations
+   code_quality
+   api_www
 
 
 Indices and tables

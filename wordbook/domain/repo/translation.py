@@ -1,35 +1,42 @@
+import logging
 from sqlalchemy.orm.exc import NoResultFound
 from . import base
 from wordbook.infra.models.word import Word
 from wordbook.infra.models.translation import Translation
 from wordbook.domain import models as domain
 
+log = logging.getLogger(__name__)
+
 __all__ = ('Repo', )
 
 
 class Repo(base.DbRepo):
-    def get_matching_translations(self, language, word_fragment):
+    def get_matching_translations(self, list_id, query):
         """Get translations matching given language and fragment of the word.
 
-        :param language: ISO639-2 language code; ie. en for English
-        :param word_fragment: String
+        :param int list_id:
+        :param string query:
 
         :returns: List of translations
         :rtype: []domain.Translation
         """
-        query = self.session.query(Word).join(Translation).filter_by(
-            language=language
-        ).filter(
-            Word.word.ilike('%{}%'.format(word_fragment))
+        assert isinstance(query, str)
+        # TODO: language as subquery
+        # TODO: exclude words existing already at list
+        language = 'en'
+
+        query = self.session.query(Word, Translation).join(Translation).filter(
+            Word.language == language).filter(
+            Word.word.ilike('%{}%'.format(query))
         ).order_by(Word.word, Translation.translation)
 
-        for translation in query.all():
-            print(translation)
+        for word, translation in query.all():
             yield domain.Translation(
-                from_language=language,
-                to_language='',
-                word=translation.word,
-                translated=translation.word
+                id=translation.id,
+                from_language=word.language,
+                into_language=translation.language,
+                word=word.word,
+                translated=translation.translation
             )
 
     def _get_or_create_word(self, language, word, ipa):
@@ -49,6 +56,19 @@ class Repo(base.DbRepo):
             self.session.commit()
 
         return word
+
+    def get(self, translation_id):
+        query = self.session.query(Translation).filter_by(id=id)
+        row = query.one()
+        translation = domain.Translation(
+            id=row.id,
+            from_language=row.word.language,
+            into_language=row.language,
+            word=row.word.word,
+            ipa=row.word.ipa,
+            translated=row.translation
+        )
+        return translation
 
     def _get_or_create_translation(self, word, to_language, translated):
         assert isinstance(word, Word)
@@ -77,9 +97,10 @@ class Repo(base.DbRepo):
             translation.word,
             translation.ipa)
 
-        translation = self._get_or_create_translation(
+        db_translation = self._get_or_create_translation(
             word,
-            translation.to_language,
+            translation.into_language,
             translation.translated)
 
+        translation.id = db_translation
         return translation

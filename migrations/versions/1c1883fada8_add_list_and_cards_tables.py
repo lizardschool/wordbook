@@ -29,10 +29,10 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     sa.Column('modified_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-    sa.Column('translation', sa.Integer(), nullable=False),
-    sa.Column('list', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['list'], ['list.id'], ),
-    sa.ForeignKeyConstraint(['translation'], ['translation.id'], ),
+    sa.Column('translation_id', sa.Integer(), nullable=False),
+    sa.Column('list_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['list_id'], ['list.id'], ),
+    sa.ForeignKeyConstraint(['translation_id'], ['translation.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     ### end Alembic commands ###

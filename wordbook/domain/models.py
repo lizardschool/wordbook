@@ -1,4 +1,5 @@
 """Domain models."""
+from wordbook import secure
 
 
 class DomainException(Exception):
@@ -25,8 +26,18 @@ class DomainModel(object):
 
         self.validate()
 
+    def __repr__(self):
+        fields = ", ".join(['%s=%s' % (fn, getattr(self, fn)) for fn in sorted(self.fields.keys())])
+        value = "".join(['<', self.__class__.__name__, ": ", fields, '>'])
+        return value
+
     def __getattr__(self, name):
-        return self.data[name]
+        try:
+            return self.data[name]
+        except KeyError:
+            if name in self.fields:
+                return None
+            raise AttributeError
 
     def validate(self):
         """
@@ -47,11 +58,44 @@ class BaseField(object):
     pass
 
 
+class List(DomainModel):
+    fields = {
+        'id': '',
+        'name': '',
+    }
+
+    @property
+    def hash(self):
+        return secure.id_to_hash(self.id)
+
+
 class Translation(DomainModel):
     fields = {
+        'id': '',
         'from_language': '',
         'into_language': '',
         'word': '',
         'ipa': '',
         'translated': '',
     }
+
+    def dto_autocomplete(self):
+        return dict(
+            id=self.id,
+            word=self.word,
+            translation=self.translated or '',
+            ipa=self.ipa or ''
+        )
+
+
+class Card(DomainModel):
+    fields = {
+        'translation_id': '',
+        'list_id': '',
+    }
+
+    def dto(self):
+        return dict(
+            translation_id=self.translation_id,
+            list_id=self.list_id,
+        )

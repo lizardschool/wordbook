@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.6/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block body %}
+  {{ cardlist.name }}
+  <div style="margin: 10px" id="word-box">
+    <input class="typeahead form-control" type="text" placeholder="Word in {{ language }}">
+  </div>
+
+  <div>
+    <table id="cardsTable"></table>
+  </div>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="addWordModal" role="dialog" aria-labelledby="addWordModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addWordModalLabel">New translation</h4>
+      </div>
+
+      <div class="modal-body">
+        <form id="addWordForm">
+          <div class="form-group">
+            <label for="wordInput">Word</label>
+            <input type="text" name="word" class="form-control" id="wordInput">
+          </div>
+
+          <div class="form-group">
+            <label for="ipaInput">Pronunciation</label>
+            <input type="text" name="ipa" class="form-control" id="ipaInput">
+          </div>
+
+          <div class="form-group">
+            <label for="translationInput">Translation</label>
+            <textarea class="form-control" name="translation" rows="3" id="translationInput"></textarea>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="add-new-translation">Add new translation</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
+  <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+  <script src="{{ url_for('static', filename='edit_list.js') }}"></script>
+
+  <script>
+  var add_word_to_list_url = "{{ url_for('create_new_card', list_id=cardlist.id) }}";
+  var bloodhound_url = "{{ url_for('translations_autocomplete', list_id=cardlist.id) }}?query=%QUERY";
+  var post_translation_url = "{{ url_for('add_translation') }}";
+  var cards_on_list_url = "{{ url_for('cards_on_list', list_id=cardlist.id) }}";
+
+  $(document).ready(function(){
+
+    translations = bloodhound_init(bloodhound_url);
+    init_typeahead();
+
+    var translations_table = $('#cardsTable').DataTable({
+        'ordering': false,
+        'ajax': {
+          url: cards_on_list_url,
+          dataSrc: 'translations'
+        },
+        //'data': [['Apple', 'ejpl', 'Jabłko']],
+        'columns': [
+          {'title': 'Word', 'data': 'word'},
+          {'title': 'Pronunciation', 'data': 'ipa'},
+          {'title': 'Translation', 'data': 'translated'}
+        ]
+    });
+
+    // Word selected in typeahead
+    get_typeahead().bind("typeahead:selected", function(obj, datum, name) {
+        translation = add_word_to_list(add_word_to_list_url, datum['id']);
+        translations_table.row.add(translation);
+    });
+
+    // New word modal - click on Add new translation button
+    $( "#add-new-translation" ).bind( "click", function(event, ui) {
+        translation_id = post_new_translation(post_translation_url);
+        if (translation_id != null) {
+          translation = add_word_to_list(add_word_to_list_url, translation_id);
+          translations_table.row.add(translation);
+        }
+    });
+  });
+  </script>
+{% endblock %}
