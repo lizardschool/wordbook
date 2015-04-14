@@ -10,6 +10,6 @@ class DbRepo(object):
         :param session: SQLAlchemy session class. If none is given, then default from db module will be used.
         """
         if session is None:
-            self.session = db.Session()
+            self.session = db.get_session()
         else:
             self.session = session
