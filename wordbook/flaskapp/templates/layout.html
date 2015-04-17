@@ -7,7 +7,7 @@
   <title>WordBook</title>
 
   <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
   {% block head %}{% endblock %}
 </head>
@@ -21,8 +21,9 @@
         <li role="presentation" class="active"><a href="#">Logout</a></li>
       </ul>
     </nav>
-    <h3 class="text-muted">WordBook</h3>
+    <h3 class="text-muted"><a href="{{ url_for('manage.index') }}">WordBook</a></h3>
   </div>
+
 {% block body %}{% endblock %}
 </div>
 

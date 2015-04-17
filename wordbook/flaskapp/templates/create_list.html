@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-<form method="POST" action="{{ url_for('create_list') }}">
+<form method="POST" action="{{ url_for('manage.create_list') }}">
   {{ form.hidden_tag() }}
   {{ form.name.label }} {{ form.name(size=20) }}
   <input type="submit" value="Create">

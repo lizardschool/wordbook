@@ -12,6 +12,13 @@ TESTDB = 'test_wordbook.db'
 TESTDB_PATH = "{}".format(TESTDB)
 
 
+@pytest.fixture()
+def app():
+    from wordbook import flaskapp
+    _app = flaskapp.create_app({})
+    return _app
+
+
 @pytest.fixture(autouse=True)
 def db(request, monkeypatch):
     """Session-wide test database."""

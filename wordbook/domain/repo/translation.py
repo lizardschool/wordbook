@@ -36,6 +36,7 @@ class Repo(base.DbRepo):
                 from_language=word.language,
                 into_language=translation.language,
                 word=word.word,
+                ipa=word.ipa,
                 translated=translation.translation
             )
 
@@ -58,7 +59,7 @@ class Repo(base.DbRepo):
         return word
 
     def get(self, translation_id):
-        query = self.session.query(Translation).filter_by(id=id)
+        query = self.session.query(Translation).filter_by(id=translation_id)
         row = query.one()
         translation = domain.Translation(
             id=row.id,
@@ -102,5 +103,5 @@ class Repo(base.DbRepo):
             translation.into_language,
             translation.translated)
 
-        translation.id = db_translation
+        translation.id = db_translation.id
         return translation

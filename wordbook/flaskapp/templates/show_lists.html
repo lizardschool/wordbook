@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
-<a href="{{ url_for('create_list') }}">Create new list</a>
+<a href="{{ url_for('manage.create_list') }}">Create new list</a>
 
 <ul>
 {% for li in lists %}
-<li><a href="{{ url_for('edit_list', list_id=li.id) }}">{{ li.name }}</a></li>
+<li><a href="{{ url_for('manage.edit_list', list_id=li.id) }}">{{ li.name }}</a></li>
 {% endfor %}
 </ul>
 {% endblock %}

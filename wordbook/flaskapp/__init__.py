@@ -1,12 +1,20 @@
 from flask import Flask
 
-app = Flask(__name__)
-# app.config.frompyfile(filename)
-app.config.update(
-    DEBUG=True,
-    SECRET_KEY='houvUgag)'
-)
 
-from . import ajax_views    # NOQA
-from . import manage_views  # NOQA
-from . import views         # NOQA
+def create_app(config_object):
+    app = Flask(__name__)
+    # app.config.frompyfile(filename)
+    # app.config.from_object(config_object)
+    app.config.update(dict(DEBUG=True, SECRET_KEY='houvUgag)'))
+
+    from . import ajax_views
+    from . import manage_views
+    from . import views
+
+    app.register_blueprint(ajax_views.ajax)
+    app.register_blueprint(manage_views.manage)
+    app.register_blueprint(views.frontend)
+
+    return app
+
+app = create_app(dict(DEBUG=True, SECRET_KEY='houvUgag)'))

@@ -22,7 +22,7 @@ class DomainModel(object):
         self.data = {}
 
         for key, value in kwargs.items():
-            self.data[key] = value
+            self.__setattr__(key, value)
 
         self.validate()
 
@@ -31,13 +31,21 @@ class DomainModel(object):
         value = "".join(['<', self.__class__.__name__, ": ", fields, '>'])
         return value
 
+    def __setattr__(self, name, value):
+        if name == 'data':
+            super().__setattr__(name, value)
+        elif name not in self.fields:
+            raise AttributeError('Unknown field %s in %s' % (name, self))
+        else:
+            super().__setattr__(name, value)
+
     def __getattr__(self, name):
         try:
             return self.data[name]
         except KeyError:
             if name in self.fields:
                 return None
-            raise AttributeError
+            raise AttributeError('Unknown field %s in %s' % (name, self))
 
     def validate(self):
         """
@@ -67,6 +75,12 @@ class List(DomainModel):
     @property
     def hash(self):
         return secure.id_to_hash(self.id)
+
+    @staticmethod
+    def hash2id(list_hash):
+        decoded = secure.hash_to_id(list_hash)
+        assert len(decoded) == 1
+        return decoded[0]
 
 
 class Translation(DomainModel):

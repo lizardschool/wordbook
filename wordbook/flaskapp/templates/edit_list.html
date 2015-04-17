@@ -8,6 +8,7 @@
   {{ cardlist.name }}
   <div style="margin: 10px" id="word-box">
     <input class="typeahead form-control" type="text" placeholder="Word in {{ language }}">
+    <span>http://localhost:5000{{ url_for('frontend.show_list', list_hash=cardlist.hash) }}</span>
   </div>
 
   <div>
@@ -55,16 +56,17 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.min.js"></script>
   <script src="//cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
-  <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/dist/typeahead.bundle.min.js"></script>
+  <!--<script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>-->
   <script src="{{ url_for('static', filename='edit_list.js') }}"></script>
 
   <script>
-  var add_word_to_list_url = "{{ url_for('create_new_card', list_id=cardlist.id) }}";
-  var bloodhound_url = "{{ url_for('translations_autocomplete', list_id=cardlist.id) }}?query=%QUERY";
-  var post_translation_url = "{{ url_for('add_translation') }}";
-  var cards_on_list_url = "{{ url_for('cards_on_list', list_id=cardlist.id) }}";
+  var add_word_to_list_url = "{{ url_for('ajax.create_new_card', list_id=cardlist.id) }}";
+  var bloodhound_url = "{{ url_for('ajax.translations_autocomplete', list_id=cardlist.id) }}?query=%QUERY";
+  var post_translation_url = "{{ url_for('ajax.add_translation') }}";
+  var cards_on_list_url = "{{ url_for('ajax.cards_on_list', list_id=cardlist.id) }}";
 
   $(document).ready(function(){
 
@@ -81,24 +83,51 @@
         'columns': [
           {'title': 'Word', 'data': 'word'},
           {'title': 'Pronunciation', 'data': 'ipa'},
-          {'title': 'Translation', 'data': 'translated'}
+          {'title': 'Translation', 'data': 'translation'}
         ]
     });
 
     // Word selected in typeahead
     get_typeahead().bind("typeahead:selected", function(obj, datum, name) {
-        translation = add_word_to_list(add_word_to_list_url, datum['id']);
-        translations_table.row.add(translation);
+        add_word_to_list(
+            add_word_to_list_url,
+            datum['id'],
+            function (data) {
+                // alert('awtl done func');
+                // console.log(data.translation.translation);
+                // translations_table.row.add(data.translation.translation);
+            },
+            function (data) {
+                alert('Error #1: typehead:selected -> add_word_to_list:fail');
+            }
+        );
     });
 
     // New word modal - click on Add new translation button
     $( "#add-new-translation" ).bind( "click", function(event, ui) {
-        translation_id = post_new_translation(post_translation_url);
-        if (translation_id != null) {
-          translation = add_word_to_list(add_word_to_list_url, translation_id);
-          translations_table.row.add(translation);
+        post_new_translation(
+            post_translation_url,
+            function (data) {
+                console.log('calling add_word_to_list after success in post_new_translation');
+                add_word_to_list(
+                    add_word_to_list_url,
+                    data.translation.id,
+                    function (data) {
+                        translations_table.row.add(data.translation);
+                        $('#addWordModal').modal('hide');
+                    },
+                    function (data) {
+                        alert('Error #2: new_word_modal:click -> post_new_translation:ok -> add_word_to_list:fail');
+                    }
+                );
+            },
+            function (data) {
+                alert('Error #3: new_word_modal:click -> post_new_translation:fail');
+            }
+        );
+
         }
-    });
+    );
   });
   </script>
 {% endblock %}

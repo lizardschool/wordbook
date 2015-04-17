@@ -67,29 +67,33 @@ function init_typeahead() {
 
 // opens modal with form where user can add new translation
 function open_add_word_modal() {
-  var word = $('#word-box .typeahead').typeahead('val');
-  $('#wordInput').val(word);
-  $('#word-box .typeahead').typeahead('close');
-};
+    // rewrite word from typeahead to input in modal
+    var word = $('#word-box .typeahead').typeahead('val');
+    $('#wordInput').val(word);
+    // close typeahead
+    $('#word-box .typeahead').typeahead('close');
+    $('#word-box .typeahead').typeahead('val', '');
+}
 
 // cardlist_id is included already in url
-function add_word_to_list(url, translation_id) {
-  var translation = null;
-  $.ajax({
-      type: 'POST',
-      url: url,
-      data: {translation_id: translation_id},
-      dataType: 'json'
-  }).done(function(data, textStatus, jqXHR){
-      alert('ok');
-      translation = data.translation;
-
-  }).fail(function(data, textStatus, jqXHR){
-      alert('err2');
-  });
-
-  return translation
-};
+function add_word_to_list(url, translation_id, done_func, fail_func) {
+    // alert('add word to list called');
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: {translation_id: translation_id},
+        dataType: 'json'
+    }).done(function(data, textStatus, jqXHR){
+        console.log(data);
+        $('#cardsTable').DataTable().ajax.reload();
+        $('#word-box .typeahead').typeahead('val', '');
+        //$('#cardsTable').DataTable().row.add(data.translation);
+        // done_func(data); // don't know why this function isn't called
+    }).fail(function(data, textStatus, jqXHR){
+        alert('adtl fail');
+        fail_func(data);
+    });
+}
 
 /*
  * edit_list po zaladowaniu strony robi request o slowka
@@ -98,7 +102,7 @@ function add_word_to_list(url, translation_id) {
  * a z ostatniej pozycji wywalamy istniejacy tam obiekt
  *
  */
-function post_new_translation(post_url) {
+function post_new_translation(post_url, done_func, fail_func) {
     var formData = {
         'word': $('input[name=word]').val(),
         'ipa': $('input[name=ipa]').val(),
@@ -106,9 +110,6 @@ function post_new_translation(post_url) {
         'from_language': 'en',  // TODO: cardlist object should contain this information
         'into_language': 'pl'  // TODO: as above
     };
-    console.log(formData);
-
-    var translation_id = null;
 
     $.ajax({
       type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
@@ -118,12 +119,8 @@ function post_new_translation(post_url) {
       encode: true
 
     }).done(function(data, textStatus, jqXHR){
-      add_word_to_list(add_word_to_list_url, data['translation']['id']);
-      translation_id = data['translation']['id'];
-
+        done_func(data);
     }).fail(function(data, textStatus, jqXHR){
-      alert('post_url failed');
+        fail_func(data);
     });
-
-    return translation_id;
 }

@@ -8,7 +8,7 @@ __all__ = ('CardlistRepo', )
 
 
 class CardlistRepo(base.DbRepo):
-    def all(self, page=1):
+    def all(self):
         # TODO: respect page numer
         query = self.session.query(List)
         for row in query.all():
@@ -50,14 +50,15 @@ class CardlistRepo(base.DbRepo):
 
         return card
 
-    def get_translations(self, list_id, limit=10, offset=0):
-        card_query = self.session.query(Card).filter_by(list_id=list_id).limit(limit).offset(offset)
+    def get_translations(self, list_id):
+        card_query = self.session.query(Card).filter_by(list_id=list_id)
         # TODO: single query (join with translation and with word)
         for row in card_query.all():
             tr = row.translation
             yield domain.Translation(
+                id=tr.id,
                 from_language=tr.word.language,
-                info_language=tr.language,
+                into_language=tr.language,
                 word=tr.word.word,
                 ipa=tr.word.word,
                 translated=tr.translation

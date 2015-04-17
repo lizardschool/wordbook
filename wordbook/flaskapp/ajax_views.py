@@ -1,13 +1,16 @@
 from flask import jsonify
 from flask import request
 from flask import abort
-from . import app
+from flask import Blueprint
+from flask import current_app as app
 from wordbook.domain import models as domain
 from wordbook.domain.repo.translation import Repo as TranslationRepo
 from wordbook.domain.repo.cardlist import CardlistRepo
 
+ajax = Blueprint('ajax', __name__, url_prefix='/ajax')
 
-@app.route('/_autocomplete-translations/<int:list_id>')
+
+@ajax.route('/_autocomplete-translations/<int:list_id>')
 def translations_autocomplete(list_id):
     try:
         query = request.args['query']
@@ -23,7 +26,7 @@ def translations_autocomplete(list_id):
     return jsonify(translations=translations_dto)
 
 
-@app.route('/_create-new-card/<list_id>', methods=['POST'])
+@ajax.route('/_create-new-card/<list_id>', methods=['POST'])
 def create_new_card(list_id):
     """
     Add word translation to cardlist with given `list_id`.
@@ -36,10 +39,10 @@ def create_new_card(list_id):
     try:
         card = domain.Card(
             list_id=list_id,
-            translation_id=request.args['translation_id']
+            translation_id=request.form['translation_id']
         )
     except KeyError:
-        app.logger.error('Insufficient parameters: %r', request.args)
+        app.logger.error('Insufficient parameters: %r', request.form)
         abort(400)
 
     card = CardlistRepo().add_card(card)
@@ -47,14 +50,14 @@ def create_new_card(list_id):
     return jsonify(card=card.dto(), translation=translation.dto_autocomplete())
 
 
-@app.route('/_cards-on-list/<list_id>', methods=['GET'])
+@ajax.route('/_cards-on-list/<list_id>', methods=['GET'])
 def cards_on_list(list_id):
     translations = CardlistRepo().get_translations(list_id)
     translations_dto = list(map(lambda t: t.dto_autocomplete(), translations))
     return jsonify(translations=translations_dto)
 
 
-@app.route('/_add-translation', methods=['POST'])
+@ajax.route('/_add-translation', methods=['POST'])
 def add_translation():
     """
 
@@ -72,13 +75,13 @@ def add_translation():
     try:
         translation = domain.Translation(
             from_language=request.form['from_language'],
-            into_languege=request.form['into_language'],
+            into_language=request.form['into_language'],
             word=request.form['word'],
             ipa=request.form['ipa'],
             translated=request.form['translation']
         )
     except KeyError:
-        app.logger.error('Insufficient parameters: %r', request.args)
+        app.logger.error('Insufficient parameters: %r', request.form)
         abort(400)
     else:
         translation = TranslationRepo().add_translation(translation)
