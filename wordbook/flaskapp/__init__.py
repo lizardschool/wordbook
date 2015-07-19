@@ -5,7 +5,8 @@ def create_app(config_object):
     app = Flask(__name__)
     # app.config.frompyfile(filename)
     # app.config.from_object(config_object)
-    app.config.update(dict(DEBUG=True, SECRET_KEY='houvUgag)'))
+    app.config.update(dict(SECRET_KEY='houvUgag)'))
+    app.config.update(config_object)
 
     from . import ajax_views
     from . import manage_views
@@ -17,4 +18,5 @@ def create_app(config_object):
 
     return app
 
-app = create_app(dict(DEBUG=True, SECRET_KEY='houvUgag)'))
+dev_app = create_app(dict(DEBUG=True, SECRET_KEY='houvUgag)'))
+app = create_app(dict(SECRET_KEY='mehonlub'))
