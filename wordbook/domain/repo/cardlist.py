@@ -60,6 +60,6 @@ class CardlistRepo(base.DbRepo):
                 from_language=tr.word.language,
                 into_language=tr.language,
                 word=tr.word.word,
-                ipa=tr.word.word,
+                ipa=tr.word.ipa,
                 translated=tr.translation
             )

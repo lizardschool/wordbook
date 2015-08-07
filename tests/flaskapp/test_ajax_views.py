@@ -1,9 +1,12 @@
 from flask import url_for
 from wordbook.domain.repo.translation import Repo
-from wordbook.infra.models.translation import Translation
 
 
 def test_add_translation(app, client):
+    """Test of add_translation ajax view.
+
+    Translation should be added to repository and returned in response.
+    """
     data = dict(
         word='sheep',
         ipa='sziip',
@@ -17,6 +20,7 @@ def test_add_translation(app, client):
         headers={'Content-Type': 'application/x-www-form-urlencoded'})
     assert resp.status_code == 200
     assert resp.json == dict(translation=dict(id=1, ipa='sziip', translation='owca', word='sheep'))
+
     repo = Repo()
     translation = repo.get(resp.json['translation']['id'])
     assert translation.translated == 'owca'

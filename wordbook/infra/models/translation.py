@@ -3,8 +3,6 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import UnicodeText
-from sqlalchemy.orm import backref
-from sqlalchemy.orm import relationship
 
 from wordbook.infra import db
 

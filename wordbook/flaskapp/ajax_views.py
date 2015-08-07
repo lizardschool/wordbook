@@ -52,6 +52,12 @@ def create_new_card(list_id):
 
 @ajax.route('/_cards-on-list/<list_id>', methods=['GET'])
 def cards_on_list(list_id):
+    """Return words from the list.
+
+    .. http:post:: /ajax/_cards-on-list/<list_id>
+
+       :statuscode 200: no error
+    """
     translations = CardlistRepo().get_translations(list_id)
     translations_dto = list(map(lambda t: t.dto_autocomplete(), translations))
     return jsonify(translations=translations_dto)
@@ -59,9 +65,9 @@ def cards_on_list(list_id):
 
 @ajax.route('/_add-translation', methods=['POST'])
 def add_translation():
-    """
+    """Add word with new translation.
 
-    .. http:post:: /_add-translation
+    .. http:post:: /ajax/_add-translation
 
        :query word:
        :query ipa:
@@ -84,5 +90,6 @@ def add_translation():
         app.logger.error('Insufficient parameters: %r', request.form)
         abort(400)
     else:
+        app.logger.info('Translation: %s', translation.__dict__)
         translation = TranslationRepo().add_translation(translation)
     return jsonify(translation=translation.dto_autocomplete())
