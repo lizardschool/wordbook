@@ -1,3 +1,4 @@
+"""Tests configuration module."""
 import sys
 import os
 import pytest
@@ -14,6 +15,7 @@ TESTDB_PATH = "{}".format(TESTDB)
 
 @pytest.fixture()
 def app():
+    """Prepare test app."""
     from wordbook import flaskapp
     _app = flaskapp.create_app({})
     return _app
@@ -48,7 +50,7 @@ def db(request, monkeypatch):
 
     def teardown():
         downgrade(alembic_config, '18554c40c9e')
-        # os.unlink(TESTDB_PATH)
+        os.unlink(TESTDB_PATH)
 
     upgrade(alembic_config, 'head')
     request.addfinalizer(teardown)
