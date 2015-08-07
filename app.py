@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import os
 import rollbar
+import rollbar.contrib.flask
 from flask import got_request_exception
 
 if __name__ == '__main__':
     from wordbook.flaskapp import dev_app as app
-    app.run(debug=True)
 else:
     from wordbook.flaskapp import app   # NOQA
 
@@ -28,3 +28,7 @@ def init_rollbar():
 
     # send exceptions from `app` to rollbar, using flask's signal system.
     got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
