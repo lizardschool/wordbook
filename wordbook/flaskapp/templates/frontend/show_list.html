@@ -5,7 +5,10 @@
 {% for translation in translations %}
   <tr>
     <td><strong>{{ translation.word }}</strong></td>
-    <td>{% if translation.ipa %}<em>/{{ translation.ipa }}/</em>{% endif %}</td>
+    <td>
+      {% if translation.ipa %}<em>/{{ translation.ipa }}/</em>{% endif %}
+      {% if translation.simplified %}<em>[{{ translation.simplified }}]</em>{% endif %}
+    </td>
     <td>{{ translation.translated }}</td>
   </tr>
 {% endfor %}

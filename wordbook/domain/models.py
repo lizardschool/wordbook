@@ -90,6 +90,7 @@ class Translation(DomainModel):
         'into_language': '',
         'word': '',
         'ipa': '',
+        'simplified': '',
         'translated': '',
     }
 
@@ -98,7 +99,8 @@ class Translation(DomainModel):
             id=self.id,
             word=self.word,
             translation=self.translated or '',
-            ipa=self.ipa or ''
+            ipa=self.ipa or '',
+            simplified=self.simplified or ''
         )
 
 

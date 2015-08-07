@@ -34,8 +34,13 @@
           </div>
 
           <div class="form-group">
-            <label for="ipaInput">Pronunciation</label>
+            <label for="ipaInput">IPA</label>
             <input type="text" name="ipa" class="form-control" id="ipaInput">
+          </div>
+
+          <div class="form-group">
+            <label for="simplifiedInput">Simplified pronunciation</label>
+            <input type="text" name="simplified" class="form-control" id="simplifiedInput">
           </div>
 
           <div class="form-group">
@@ -79,10 +84,11 @@
           url: cards_on_list_url,
           dataSrc: 'translations'
         },
-        //'data': [['Apple', 'ejpl', 'Jabłko']],
+        //'data': [['Apple', 'ejpyl', 'epyl', 'Jabłko']],
         'columns': [
           {'title': 'Word', 'data': 'word'},
-          {'title': 'Pronunciation', 'data': 'ipa'},
+          {'title': 'IPA', 'data': 'ipa'},
+          {'title': 'Pronunciation', 'data': 'simplified'},
           {'title': 'Translation', 'data': 'translation'}
         ]
     });

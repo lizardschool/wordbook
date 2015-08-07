@@ -1,3 +1,4 @@
+"""Ajax views tests."""
 from flask import url_for
 from wordbook.domain.repo.translation import Repo
 
@@ -9,7 +10,8 @@ def test_add_translation(app, client):
     """
     data = dict(
         word='sheep',
-        ipa='sziip',
+        ipa='sziiip',
+        simplified='sziip',
         translation='owca',
         from_language='en',
         into_language='pl',
@@ -19,12 +21,13 @@ def test_add_translation(app, client):
         data=data,
         headers={'Content-Type': 'application/x-www-form-urlencoded'})
     assert resp.status_code == 200
-    assert resp.json == dict(translation=dict(id=1, ipa='sziip', translation='owca', word='sheep'))
+    assert resp.json == dict(translation=dict(id=1, simplified='sziip', ipa='sziiip', translation='owca', word='sheep'))
 
     repo = Repo()
     translation = repo.get(resp.json['translation']['id'])
     assert translation.translated == 'owca'
     assert translation.from_language == 'en'
+    assert translation.simplified == 'sziip'
     assert translation.word == 'sheep'
-    assert translation.ipa == 'sziip'
+    assert translation.ipa == 'sziiip'
     assert translation.into_language == 'pl'

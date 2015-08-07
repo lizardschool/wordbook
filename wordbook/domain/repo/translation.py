@@ -37,10 +37,11 @@ class Repo(base.DbRepo):
                 into_language=translation.language,
                 word=word.word,
                 ipa=word.ipa,
+                simplified=word.simplified_pronunciation,
                 translated=translation.translation
             )
 
-    def _get_or_create_word(self, language, word, ipa):
+    def _get_or_create_word(self, language, word, ipa, simplified_pronunciation):
         query = self.session.query(Word).filter_by(
             language=language,
             word=word)
@@ -51,7 +52,8 @@ class Repo(base.DbRepo):
             word = Word(
                 language=language,
                 word=word,
-                ipa=ipa)
+                ipa=ipa,
+                simplified_pronunciation=simplified_pronunciation)
 
             self.session.add(word)
             self.session.commit()
@@ -67,6 +69,7 @@ class Repo(base.DbRepo):
             into_language=row.language,
             word=row.word.word,
             ipa=row.word.ipa,
+            simplified=row.word.simplified_pronunciation,
             translated=row.translation
         )
         return translation
@@ -96,7 +99,8 @@ class Repo(base.DbRepo):
         word = self._get_or_create_word(
             translation.from_language,
             translation.word,
-            translation.ipa)
+            translation.ipa,
+            translation.simplified)
 
         db_translation = self._get_or_create_translation(
             word,

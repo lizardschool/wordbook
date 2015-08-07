@@ -81,6 +81,7 @@ def add_translation():
 
        :query word:
        :query ipa:
+       :query simplified:
        :query translation:
        :query from_language:
        :query into_language:
@@ -94,6 +95,7 @@ def add_translation():
             into_language=request.form['into_language'],
             word=request.form['word'],
             ipa=request.form['ipa'],
+            simplified=request.form['simplified'],
             translated=request.form['translation']
         )
     except KeyError:

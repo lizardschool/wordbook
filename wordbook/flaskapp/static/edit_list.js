@@ -13,6 +13,9 @@ function bloodhound_init(url) {
                   if (translation['ipa']) {
                       verbose += "/" + translation['ipa'] + "/";
                   }
+                  if (translation['simplified']) {
+                      verbose += "[" + translation['simplified'] + "]";
+                  }
                   verbose += " - ";
                   verbose += translation['translation'];
 
@@ -21,6 +24,7 @@ function bloodhound_init(url) {
                       value: verbose,
                       word: translation['word'],
                       ipa: translation['ipa'],
+                      simplified: translation['simplified'],
                       translation: translation['translation']
                   };
               });
@@ -59,7 +63,7 @@ function init_typeahead() {
         '<button data-toggle="modal" data-target="#addWordModal" onclick="open_add_word_modal()" class="btn btn-primary">Add new translation</button>',
         '</div>'
       ].join('\n'),
-      suggestion: Handlebars.compile('<p><strong>{{ word }}</strong> <em>{{ ipa }}</em>– {{ translation }}</p>')
+      suggestion: Handlebars.compile('<p><strong>{{ word }}</strong> <em>/{{ ipa }}/ [{{ simplified }}]</em>– {{ translation }}</p>')
     }
   })
 }
@@ -106,6 +110,7 @@ function post_new_translation(post_url, done_func, fail_func) {
     var formData = {
         'word': $('input[name=word]').val(),
         'ipa': $('input[name=ipa]').val(),
+        'simplified': $('input[name=simplified]').val(),
         'translation': $('textarea[name=translation]').val(),
         'from_language': 'en',  // TODO: cardlist object should contain this information
         'into_language': 'pl'  // TODO: as above

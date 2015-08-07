@@ -7,12 +7,14 @@ def test_translation_dto():
         from_language='en',
         into_language='pl',
         word='apple',
-        ipa='epyl',
+        ipa='ejpyl',
+        simplified='epyl',
         translated='jabłko',
     )
     assert t.dto_autocomplete() == dict(
         id=1,
         word='apple',
         translation='jabłko',
-        ipa='epyl',
+        ipa='ejpyl',
+        simplified='epyl',
     )
