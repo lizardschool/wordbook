@@ -10,6 +10,8 @@ from wordbook.infra import db
 class List(db.TimestampMixin, db.Model):
     name = Column(UnicodeText, nullable=False)
     cards = relationship('Card', cascade='all, delete-orphan')
+    # TODO: foreign language
+    # TODO: known language
 
 
 class Card(db.TimestampMixin, db.Model):
