@@ -1,3 +1,5 @@
+"""Cards repository module."""
+from sqlalchemy import desc
 from sqlalchemy.orm.exc import NoResultFound
 from . import base
 from wordbook.infra.models.wordlist import List
@@ -8,7 +10,11 @@ __all__ = ('CardlistRepo', )
 
 
 class CardlistRepo(base.DbRepo):
+
+    """Cards repository."""
+
     def all(self):
+        """Return all lists."""
         # TODO: respect page numer
         query = self.session.query(List)
         for row in query.all():
@@ -18,20 +24,28 @@ class CardlistRepo(base.DbRepo):
             )
 
     def get(self, list_id):
+        """Get the list by the id."""
         query = self.session.query(List).filter_by(id=list_id)
         row = query.one()
         return domain.List(id=row.id, name=row.name)
 
     def create(self, name):
+        """Create a new list with a given name."""
+        # TODO(multilang): it must receive information about both languages.
         cardlist = List(name=name)
         self.session.add(cardlist)
         self.session.commit()
         return domain.List(id=cardlist.id, name=cardlist.name)
 
     def add_card(self, card):
+        """Add the card.
+
+        A card has a reference to the list, so passing a list id as another
+        parameter is not necessary.
+        """
         list_query = self.session.query(List).filter_by(id=card.list_id)
         cardlist = list_query.one()
-        # TODO: if list does not exists then it should throw an exception
+        # TODO(errorhandling): if list does not exists then it should throw an exception
 
         card_query = self.session.query(Card).filter_by(
             list_id=cardlist.id,
@@ -50,9 +64,13 @@ class CardlistRepo(base.DbRepo):
 
         return card
 
-    def get_translations(self, list_id):
-        card_query = self.session.query(Card).filter_by(list_id=list_id)
-        # TODO: single query (join with translation and with word)
+    def get_cards_from_list(self, list_id):
+        """Return cards from the list.
+
+        Cards are sorted in a descending order by the date of creation.
+        """
+        card_query = self.session.query(Card).filter_by(list_id=list_id).order_by(desc('created_at'))
+        # TODO(optimalization): single query (join with translation and with word)
         for row in card_query.all():
             tr = row.translation
             yield domain.Translation(

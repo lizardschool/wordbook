@@ -1,3 +1,4 @@
+"""Views used via javascript."""
 from flask import jsonify
 from flask import request
 from flask import abort
@@ -12,6 +13,15 @@ ajax = Blueprint('ajax', __name__, url_prefix='/ajax')
 
 @ajax.route('/_autocomplete-translations/<int:list_id>')
 def translations_autocomplete(list_id):
+    """Autocomplete for words and translations.
+
+    The view receives the list_id parameter to be able to skip
+    words that are already added do the list.
+
+    .. http:post:: /ajax/_autocomplete-translations/<list_id>
+
+       :statuscode 200: no error
+    """
     try:
         query = request.args['query']
     except KeyError:
@@ -26,7 +36,7 @@ def translations_autocomplete(list_id):
     return jsonify(translations=translations_dto)
 
 
-@ajax.route('/_create-new-card/<list_id>', methods=['POST'])
+@ajax.route('/_create-new-card/<int:list_id>', methods=['POST'])
 def create_new_card(list_id):
     """
     Add word translation to cardlist with given `list_id`.
@@ -50,7 +60,7 @@ def create_new_card(list_id):
     return jsonify(card=card.dto(), translation=translation.dto_autocomplete())
 
 
-@ajax.route('/_cards-on-list/<list_id>', methods=['GET'])
+@ajax.route('/_cards-on-list/<int:list_id>', methods=['GET'])
 def cards_on_list(list_id):
     """Return words from the list.
 
@@ -58,7 +68,7 @@ def cards_on_list(list_id):
 
        :statuscode 200: no error
     """
-    translations = CardlistRepo().get_translations(list_id)
+    translations = CardlistRepo().get_cards_from_list(list_id)
     translations_dto = list(map(lambda t: t.dto_autocomplete(), translations))
     return jsonify(translations=translations_dto)
 
