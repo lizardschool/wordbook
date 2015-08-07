@@ -70,7 +70,7 @@ class CardlistRepo(base.DbRepo):
         Cards are sorted in a descending order by the date of creation.
         """
         card_query = self.session.query(Card).filter_by(list_id=list_id).order_by(desc('created_at'))
-        # TODO(optimalization): single query (join with translation and with word)
+        # TODO(optimization): single query (join with translation and with word)
         for row in card_query.all():
             tr = row.translation
             yield domain.Translation(
