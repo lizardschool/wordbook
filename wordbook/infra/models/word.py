@@ -2,6 +2,7 @@
 import pycountry
 from sqlalchemy import Column
 from sqlalchemy import UnicodeText
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from wordbook.infra import db
@@ -17,11 +18,17 @@ class Word(db.TimestampMixin, db.LanguageMixin, db.Model):
     ipa = Column(UnicodeText)
     simplified_pronunciation = Column(UnicodeText)
 
-    translations = relationship("Translation", backref='word',
-                                cascade="all, delete-orphan")
+    cards = relationship(
+        "Card",
+        backref='card',
+        cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint('word', 'language', name='_word_language_uc'),
+    )
 
     def __repr__(self):
-        """Text representation."""
+        """Verbose representation."""
         return '<Word(language={language_name}, word={word}, ipa={ipa} simplified={simplified})>'.format(
             language_name=self.language_name,
             word=self.word,

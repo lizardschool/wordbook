@@ -1,21 +1,66 @@
 """Database models for user's list and cards on that list."""
+from sqlalchemy import Boolean
 from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import UnicodeText
+from sqlalchemy import false
+from sqlalchemy import UniqueConstraint
+from sqlalchemy import func
 from sqlalchemy.orm import relationship
+from wordbook.infra import config
 from wordbook.infra import db
 
 
 class List(db.TimestampMixin, db.Model):
-    name = Column(UnicodeText, nullable=False)
-    cards = relationship('Card', cascade='all, delete-orphan')
-    # TODO: foreign language
-    # TODO: known language
+
+    """Model of the list containing selected words."""
+
+    # Fields
+    # id
+    # created_at
+    # modified_at
+    name = Column(UnicodeText, nullable=False, index=True)
+    foreign_language = Column(Enum(*config.TRANSLATION_LANGUAGES),
+                              doc='ISO639-2 language code.',
+                              nullable=False)
+    known_language = Column(Enum(*config.TRANSLATION_LANGUAGES),
+                            doc='ISO639-2 language code.')
+    definitions = Column(
+        Boolean,
+        doc='List can contain cards with definitions in foreign language.',
+        default=False,
+        server_default=false()
+    )
+    pictorials = Column(
+        Boolean,
+        doc='List can contain cards with pictures instead of translated words.',
+        default=False,
+        server_default=false()
+    )
+    last_visited_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now())
+
+    # Relationships
+    assigned_cards = relationship('CardAssignment', cascade='all, delete-orphan')
 
 
-class Card(db.TimestampMixin, db.Model):
-    translation_id = Column(Integer, ForeignKey('translation.id'), nullable=False)
-    list_id = Column(Integer, ForeignKey('list.id'), nullable=False)
+class CardAssignment(db.TimestampMixin, db.Model):
 
-    translation = relationship('Translation', backref='cards')
+    """Model representing assignment of the card to the list."""
+
+    card_id = Column(Integer, ForeignKey('card.id'), nullable=False, index=True)
+    list_id = Column(Integer, ForeignKey('list.id'), nullable=False, index=True)
+
+    last_accessed_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+
+    __table_args__ = (
+        UniqueConstraint('card_id', 'list_id', name='_card_list_uc'),
+    )
+
+
+    # TODO(last_access): manager powinien miec metode touch, ktora zmienia date w tym polu, ale nie zapisuje

@@ -7,7 +7,7 @@
 ####################
 
 LOCALE = 'pl'
-TRANSLATION_LANGUAGES = ('en', 'pl', 'fr', )
+TRANSLATION_LANGUAGES = ('en', 'pl', 'fr', 'es', )
 
 ####################
 #

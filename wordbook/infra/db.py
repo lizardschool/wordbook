@@ -9,6 +9,7 @@ Useful documentation
   http://docs.sqlalchemy.org/en/rel_0_9/core/sqlelement.html#sqlalchemy.sql.operators.ColumnOperators
 
 """
+import re
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -22,6 +23,9 @@ from . import config
 
 __all__ = ('Model', 'TimestampMixin', 'LanguageMixin', 'get_session')
 
+first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+all_cap_re = re.compile('([a-z0-9])([A-Z])')
+
 
 # http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#sqlalchemy.create_engine
 def get_session():
@@ -30,7 +34,16 @@ def get_session():
     return Session()
 
 
+def decamelsify(name):
+    """Convert CamelCase to name_with_underscores."""
+    s1 = first_cap_re.sub(r'\1_\2', name)
+    return all_cap_re.sub(r'\1_\2', s1).lower()
+
+
 class Base(object):
+
+    """Base model definition."""
+
     id = Column(Integer, primary_key=True)
 
     # __table_args__ = {'mysql_engine': 'InnoDB'}
@@ -38,7 +51,8 @@ class Base(object):
 
     @declared_attr
     def __tablename__(cls):
-        return cls.__name__.lower()
+        """Convert class name to table name."""
+        return decamelsify(cls.__name__)
 
 # http://docs.sqlalchemy.org/en/rel_0_9/orm/extensions/declarative/api.html#sqlalchemy.ext.declarative.declarative_base
 #: Base class for declarative class definitions.
@@ -55,6 +69,9 @@ class TimestampMixin(object):
 
 
 class LanguageMixin(object):
+
+    """Mixin that adds information about language."""
+
     language = Column(Enum(*config.TRANSLATION_LANGUAGES),
                       doc='ISO639-2 language code.',
                       nullable=False)
