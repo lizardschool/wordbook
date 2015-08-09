@@ -1,4 +1,5 @@
 """Database models for user's list and cards on that list."""
+import pycountry
 from sqlalchemy import event
 from sqlalchemy import Boolean
 from sqlalchemy import Column

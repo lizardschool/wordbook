@@ -60,24 +60,25 @@ def create_new_card(list_id):
     return jsonify(card=card.dto(), translation=translation.dto_autocomplete())
 
 
-@ajax.route('/_cards-on-list/<int:list_id>', methods=['GET'])
+@ajax.route('/cards-on-list/<int:list_id>')
 def cards_on_list(list_id):
     """Return words from the list.
 
-    .. http:post:: /ajax/_cards-on-list/<list_id>
+    .. http:post:: /ajax/cards-on-list/<int:list_id>
 
        :statuscode 200: no error
     """
-    translations = CardlistRepo().get_cards_from_list(list_id)
-    translations_dto = list(map(lambda t: t.dto_autocomplete(), translations))
-    return jsonify(translations=translations_dto)
+    cards = CardlistRepo().get_cards_from_list(list_id)
+    # TODO: card DTO is not implemented
+    cards_dto = list(map(lambda card: card.dto_autocomplete(), cards))
+    return jsonify(cards=cards_dto)
 
 
-@ajax.route('/_add-translation', methods=['POST'])
+@ajax.route('/add-translation', methods=['POST'])
 def add_translation():
     """Add word with new translation.
 
-    .. http:post:: /ajax/_add-translation
+    .. http:post:: /ajax/add-translation
 
        :query word:
        :query ipa:

@@ -2,7 +2,12 @@
 {% block body %}
 <form method="POST" action="{{ url_for('manage.create_list') }}">
   {{ form.hidden_tag() }}
-  {{ form.name.label }} {{ form.name(size=20) }}
+  {% for field in form %}
+    {% if field.name == 'csrf_token' %}{% else %}
+    {{ field.label }} {% if field.flags.required %}*{% endif %}
+    {{ field }}<small>{{ field.description }}</small><br>
+    {% endif %}
+  {% endfor %}
   <input type="submit" value="Create">
 </form>
 {% endblock %}

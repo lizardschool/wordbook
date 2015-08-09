@@ -7,8 +7,12 @@
 {% block body %}
   {{ cardlist.name }}
   <div style="margin: 10px" id="word-box">
-    <input class="typeahead form-control" type="text" placeholder="Word in {{ language }}">
-    <span>http://localhost:5000{{ url_for('frontend.show_list', list_hash=cardlist.hash) }}</span>
+    <input class="typeahead form-control" type="text" placeholder="Start typing the word in {{ cardlist.foreign_language_name }}&hellip;">
+    <span>
+      <a href="{{ url_for('frontend.show_list', list_hash=cardlist.hash) }}" target="blank">
+        {{ url_for('frontend.show_list', list_hash=cardlist.hash) }}
+      </a>
+    </span>
   </div>
 
   <div>
@@ -82,7 +86,7 @@
         'ordering': false,
         'ajax': {
           url: cards_on_list_url,
-          dataSrc: 'translations'
+          dataSrc: 'cards'
         },
         //'data': [['Apple', 'ejpyl', 'epyl', 'Jabłko']],
         'columns': [

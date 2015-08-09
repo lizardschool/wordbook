@@ -45,3 +45,15 @@ def test_list_and_assignment_creation_and_uniqueness():
         session.flush()
 
     session.rollback()
+
+
+def test_cardlist_foreign_language_name():
+    """Test returning cardlist foreign language iso code to name."""
+    li = List(
+        name='test1',
+        foreign_language='de',
+        known_language='pl',
+        definitions=True,
+        pictorials=True,
+    )
+    assert li.foreign_language_name == 'German'

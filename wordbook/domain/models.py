@@ -1,4 +1,5 @@
 """Domain models."""
+import pycountry
 from wordbook import secure
 
 
@@ -85,6 +86,11 @@ class List(DomainModel):
         decoded = secure.hash_to_id(list_hash)
         assert len(decoded) == 1
         return decoded[0]
+
+    @property
+    def foreign_language_name(self):
+        """Foreign language name."""
+        return pycountry.languages.get(alpha2=self.foreign_language).name
 
 
 class Translation(DomainModel):

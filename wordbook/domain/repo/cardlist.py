@@ -84,12 +84,16 @@ class CardlistRepo(base.DbRepo):
 
         Cards are sorted in a descending order by the date of creation.
         """
-        from wordbook.infra.models.cardlist import Card     # TODO(fail)
-
-        card_query = self.session.query(Card).filter_by(list_id=list_id).order_by(desc('created_at'))
+        from wordbook.infra.models.cardlist import CardAssignment
         # TODO(optimization): single query (join with translation and with word)
-        for row in card_query.all():
-            tr = row.translation
+        assigned_cards = self.session.query(CardAssignment)
+        assigned_cards = assigned_cards.filter_by(list_id=list_id)
+        assigned_cards = assigned_cards.order_by(desc('last_accessed_at'))
+
+        for row in assigned_cards.all():
+            # TODO(not-implemented)
+            raise NotImplementedError
+            # This should be card not translation object
             yield domain.Translation(
                 id=tr.id,
                 from_language=tr.word.language,
