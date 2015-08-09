@@ -9,7 +9,7 @@ def test_card_creation():
     session = get_session()
     word = Word(language='en', word='barn', ipa='baarn', simplified='barn')
     session.add(word)
-    session.commit()
+    session.flush()
 
     card = Card(
         word_id=word.id,
