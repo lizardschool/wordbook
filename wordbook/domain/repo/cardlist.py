@@ -2,8 +2,8 @@
 from sqlalchemy import desc
 from sqlalchemy.orm.exc import NoResultFound
 from . import base
-from wordbook.infra.models.wordlist import List
-from wordbook.infra.models.wordlist import Card
+from wordbook.infra.models.cardlist import List
+from wordbook.infra.models.cardlist import Card     # TODO(fail)
 from wordbook.domain import models as domain
 
 __all__ = ('CardlistRepo', )
