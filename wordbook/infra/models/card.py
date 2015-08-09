@@ -5,7 +5,6 @@ from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import UnicodeText
-from sqlalchemy import Boolean
 from wordbook.infra import db
 from wordbook.infra import config
 

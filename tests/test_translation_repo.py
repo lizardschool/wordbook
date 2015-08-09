@@ -1,8 +1,6 @@
-from wordbook.domain.repo.translation import Repo
-from wordbook.domain.models import Translation
-
-
 def test_add_translation():
+    from wordbook.domain.repo.translation import Repo
+    from wordbook.domain.models import Translation
     repo = Repo()
     translation = repo.add_translation(
         Translation(
@@ -26,6 +24,8 @@ def test_add_translation():
 
 
 def test_get_matching_translations():
+    from wordbook.domain.repo.translation import Repo
+    from wordbook.domain.models import Translation
     repo = Repo()
     repo.add_translation(
         Translation(

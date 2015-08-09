@@ -79,6 +79,6 @@ class CardlistRepo(base.DbRepo):
                 into_language=tr.language,
                 word=tr.word.word,
                 ipa=tr.word.ipa,
-                simplified=tr.word.simplified_pronunciation,
+                simplified=tr.word.simplified,
                 translated=tr.translation
             )

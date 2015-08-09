@@ -1,6 +1,5 @@
 """Ajax views tests."""
 from flask import url_for
-from wordbook.domain.repo.translation import Repo
 
 
 def test_add_translation(app, client):
@@ -8,6 +7,7 @@ def test_add_translation(app, client):
 
     Translation should be added to repository and returned in response.
     """
+    from wordbook.domain.repo.translation import Repo
     data = dict(
         word='sheep',
         ipa='sziiip',

@@ -16,7 +16,7 @@ class Word(db.TimestampMixin, db.LanguageMixin, db.Model):
 
     word = Column(UnicodeText, nullable=False)
     ipa = Column(UnicodeText)
-    simplified_pronunciation = Column(UnicodeText)
+    simplified = Column(UnicodeText)
 
     cards = relationship(
         "Card",
@@ -33,10 +33,10 @@ class Word(db.TimestampMixin, db.LanguageMixin, db.Model):
             language_name=self.language_name,
             word=self.word,
             ipa=self.ipa,
-            simplified=self.simplified_pronunciation
+            simplified=self.simplified
         )
 
     @property
     def language_name(self):
         """Full language name."""
-        return pycountry.languages.get(alpha=self.language).name
+        return pycountry.languages.get(alpha2=self.language).name

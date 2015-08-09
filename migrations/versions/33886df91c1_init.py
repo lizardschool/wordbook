@@ -41,7 +41,7 @@ def upgrade():
         sa.Column('language', sa.Enum('en', 'pl', 'fr', 'es'), nullable=False),
         sa.Column('word', sa.UnicodeText(), nullable=False),
         sa.Column('ipa', sa.UnicodeText(), nullable=True),
-        sa.Column('simplified_pronunciation', sa.UnicodeText(), nullable=True),
+        sa.Column('simplified', sa.UnicodeText(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('word', 'language', name='_word_language_uc')
     )
