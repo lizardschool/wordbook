@@ -29,7 +29,7 @@ class Word(db.TimestampMixin, db.LanguageMixin, db.Model):
 
     def __repr__(self):
         """Verbose representation."""
-        return '<Word(language={language_name}, word={word}, ipa={ipa} simplified={simplified})>'.format(
+        return '<Word(language={language_name}, word={word}, ipa={ipa}, simplified={simplified})>'.format(
             language_name=self.language_name,
             word=self.word,
             ipa=self.ipa,
