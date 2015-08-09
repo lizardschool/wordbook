@@ -30,7 +30,7 @@ all_cap_re = re.compile('([a-z0-9])([A-Z])')
 # http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#sqlalchemy.create_engine
 def get_session():
     engine = create_engine(config.SQLALCHEMY_ENGINE, echo=config.SQLALCHEMY_ECHO, echo_pool=config.SQLALCHEMY_ECHO_POOL)
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine, autoflush=True)
     return Session()
 
 

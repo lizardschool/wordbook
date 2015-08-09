@@ -19,7 +19,7 @@ def test_card_creation():
         definition='Wooden building.'
     )
     session.add(card)
-    session.commit()
+    session.flush()
 
     db_card = session.query(Card).filter_by(id=card.id).one()
 
@@ -31,6 +31,7 @@ def test_card_creation():
     assert db_card.definition == 'Wooden building.'
     assert db_card.created_at is not None
     assert db_card.modified_at is not None
+    session.rollback()
 
 
 def test_card_translation_validation():
@@ -43,11 +44,12 @@ def test_card_translation_validation():
     card = Card(
         word_id=word.id,
         language='en',
-        translation='',
     )
     session.add(card)
+
     with pytest.raises(ValueError):
         session.flush()
+
     session.rollback()
 
 

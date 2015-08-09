@@ -1,4 +1,5 @@
 """Database models for user's list and cards on that list."""
+from sqlalchemy import event
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
@@ -64,3 +65,14 @@ class CardAssignment(db.TimestampMixin, db.Model):
 
 
     # TODO(last_access): manager powinien miec metode touch, ktora zmienia date w tym polu, ale nie zapisuje
+
+
+@event.listens_for(List, 'before_insert')
+@event.listens_for(List, 'before_update')
+def card_validation(mapper, connection, li):
+    """List data validation.
+
+    :raises ValueError: if model is missing some data
+    """
+    if not (li.known_language or li.definitions or li.pictorials):
+        raise ValueError('List must contains known language, pictorials or definitions.')

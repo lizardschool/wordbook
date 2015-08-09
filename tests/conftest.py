@@ -49,6 +49,7 @@ def db(request, monkeypatch):
     alembic_config.set_section_option('alembic', 'sqlalchemy.url', 'sqlite:///' + TESTDB_PATH)
 
     def teardown():
+        db.get_session().rollback()
         downgrade(alembic_config, 'base')
         os.unlink(TESTDB_PATH)
 

@@ -26,5 +26,5 @@ SQLALCHEMY_ENGINE = 'sqlite:///wordbook.db'
 #: Is produced SQLs should be logged (bool|str)
 #: If set to the string "debug",
 #: result rows will be printed to the standard output as well.
-SQLALCHEMY_ECHO = True
+SQLALCHEMY_ECHO = False
 SQLALCHEMY_ECHO_POOL = SQLALCHEMY_ECHO

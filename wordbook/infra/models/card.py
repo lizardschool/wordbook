@@ -27,14 +27,14 @@ class Card(db.TimestampMixin, db.Model):
     definition = Column(UnicodeText)
 
 
-@event.listens_for(Card, 'before_insert', once=True)
-@event.listens_for(Card, 'before_update', once=True)
+@event.listens_for(Card, 'before_insert')
+@event.listens_for(Card, 'before_update')
 def card_validation(mapper, connection, card):
     """Card data validation.
 
     :raises ValueError: if model is missing some data
     """
-    translation = (card.translation and card.language)
+    translation = (bool(card.translation) and bool(card.language))
     picture = card.picture
     definition = card.definition
 
