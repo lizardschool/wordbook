@@ -2,7 +2,6 @@ import logging
 from sqlalchemy.orm.exc import NoResultFound
 from . import base
 from wordbook.infra.models.word import Word
-from wordbook.infra.models.translation import Translation
 from wordbook.domain import models as domain
 
 log = logging.getLogger(__name__)
@@ -20,6 +19,7 @@ class Repo(base.DbRepo):
         :returns: List of translations
         :rtype: []domain.Translation
         """
+        from wordbook.infra.models.translation import Translation
         assert isinstance(query, str)
         # TODO: language as subquery
         # TODO: exclude words existing already at list
@@ -61,6 +61,7 @@ class Repo(base.DbRepo):
         return word
 
     def get(self, translation_id):
+        from wordbook.infra.models.translation import Translation
         query = self.session.query(Translation).filter_by(id=translation_id)
         row = query.one()
         translation = domain.Translation(
@@ -75,6 +76,7 @@ class Repo(base.DbRepo):
         return translation
 
     def _get_or_create_translation(self, word, to_language, translated):
+        from wordbook.infra.models.translation import Translation
         assert isinstance(word, Word)
         query = self.session.query(Translation).filter_by(
             word_id=word.id,

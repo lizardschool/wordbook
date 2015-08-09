@@ -70,6 +70,10 @@ class List(DomainModel):
     fields = {
         'id': '',
         'name': '',
+        'foreign_language': '',
+        'known_language': '',
+        'definitions': '',
+        'pictorials': '',
     }
 
     @property

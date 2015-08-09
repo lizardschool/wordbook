@@ -3,7 +3,6 @@ from sqlalchemy import desc
 from sqlalchemy.orm.exc import NoResultFound
 from . import base
 from wordbook.infra.models.cardlist import List
-from wordbook.infra.models.cardlist import Card     # TODO(fail)
 from wordbook.domain import models as domain
 
 __all__ = ('CardlistRepo', )
@@ -11,38 +10,53 @@ __all__ = ('CardlistRepo', )
 
 class CardlistRepo(base.DbRepo):
 
-    """Cards repository."""
+    """List repository."""
+
+    def _row_to_domain_object(self, row):
+        """Converts database row into domain object."""
+        return domain.List(
+            id=row.id,
+            name=row.name,
+            foreign_language=row.foreign_language,
+            known_language=row.known_language,
+            definitions=row.definitions,
+            pictorials=row.pictorials,
+        )
 
     def all(self):
         """Return all lists."""
-        # TODO: respect page numer
         query = self.session.query(List)
         for row in query.all():
-            yield domain.List(
-                id=row.id,
-                name=row.name
-            )
+            yield self._row_to_domain_object(row)
 
     def get(self, list_id):
         """Get the list by the id."""
         query = self.session.query(List).filter_by(id=list_id)
         row = query.one()
-        return domain.List(id=row.id, name=row.name)
+        return self._row_to_domain_object(row)
 
-    def create(self, name):
+    def create(self, name, foreign_language, known_language=None, definitions=False, pictorials=False):
         """Create a new list with a given name."""
-        # TODO(multilang): it must receive information about both languages.
-        cardlist = List(name=name)
-        self.session.add(cardlist)
+        row = List(
+            name=name,
+            foreign_language=foreign_language,
+            known_language=known_language,
+            definitions=definitions,
+            pictorials=pictorials
+            )
+        self.session.add(row)
         self.session.commit()
-        return domain.List(id=cardlist.id, name=cardlist.name)
+        return self._row_to_domain_object(row)
 
+    # TODO(multilang):
     def add_card(self, card):
         """Add the card.
 
         A card has a reference to the list, so passing a list id as another
         parameter is not necessary.
         """
+        from wordbook.infra.models.cardlist import Card     # TODO(fail)
+
         list_query = self.session.query(List).filter_by(id=card.list_id)
         cardlist = list_query.one()
         # TODO(errorhandling): if list does not exists then it should throw an exception
@@ -64,11 +78,14 @@ class CardlistRepo(base.DbRepo):
 
         return card
 
+    # TODO(multilang):
     def get_cards_from_list(self, list_id):
         """Return cards from the list.
 
         Cards are sorted in a descending order by the date of creation.
         """
+        from wordbook.infra.models.cardlist import Card     # TODO(fail)
+
         card_query = self.session.query(Card).filter_by(list_id=list_id).order_by(desc('created_at'))
         # TODO(optimization): single query (join with translation and with word)
         for row in card_query.all():
