@@ -115,3 +115,35 @@ def test_card_with_definition_validation():
     session.add(card)
     session.flush()
     session.rollback()
+
+
+def test_card_to_word_relationship():
+    """Test card to word relationship."""
+    session = get_session()
+    word = Word(language='en', word='cat', ipa='kat', simplified='kat')
+    session.add(word)
+    session.flush()
+
+    card1 = Card(
+        word_id=word.id,
+        definition='Furry little animal.',
+    )
+
+    card2 = Card(
+        word_id=word.id,
+        picture='cat.png'
+    )
+
+    session.add(card1)
+    session.add(card2)
+    session.flush()
+
+    db_card = session.query(Card).filter_by(id=card1.id).one()
+
+    assert db_card.word.id == word.id
+    assert db_card.word.word == 'cat'
+
+    rev_cards = db_card.word.cards
+    assert len(rev_cards) == 2
+    assert list(sorted([c.id for c in rev_cards])) == [card1.id, card2.id]
+    session.rollback()

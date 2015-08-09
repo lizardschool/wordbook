@@ -20,7 +20,7 @@ class Word(db.TimestampMixin, db.LanguageMixin, db.Model):
 
     cards = relationship(
         "Card",
-        backref='card',
+        backref='word',
         cascade="all, delete-orphan")
 
     __table_args__ = (
