@@ -73,7 +73,7 @@
 
   <script>
   var add_word_to_list_url = "{{ url_for('ajax.create_new_card', list_id=cardlist.id) }}";
-  var bloodhound_url = "{{ url_for('ajax.translations_autocomplete', list_id=cardlist.id) }}?query=%QUERY";
+  var bloodhound_url = "{{ url_for('ajax.cards_autocomplete') }}?list_id={{ cardlist.id }}&query=%QUERY";
   var post_translation_url = "{{ url_for('ajax.add_translation') }}";
   var cards_on_list_url = "{{ url_for('ajax.cards_on_list', list_id=cardlist.id) }}";
 

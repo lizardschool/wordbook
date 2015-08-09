@@ -11,23 +11,33 @@ from wordbook.domain.repo.cardlist import CardlistRepo
 ajax = Blueprint('ajax', __name__, url_prefix='/ajax')
 
 
-@ajax.route('/_autocomplete-translations/<int:list_id>')
-def translations_autocomplete(list_id):
-    """Autocomplete for words and translations.
+@ajax.route('/autocomplete-cards')
+def cards_autocomplete():
+    """Autocomplete for words from cards.
 
     The view receives the list_id parameter to be able to skip
     words that are already added do the list.
 
-    .. http:post:: /ajax/_autocomplete-translations/<list_id>
+    .. http:post:: /ajax/autocomplete-cards
+
+       :query list_id: list identifier
+       :query query: Autocoplete query
 
        :statuscode 200: no error
+       :statuscode 400: insufficient or invalid parameters
     """
+
     try:
+        list_id = int(request.args['list_id'])
         query = request.args['query']
     except KeyError:
         app.logger.error('Insufficient parameters: %r', request.args)
         abort(400)
+    except ValueError:
+        app.logger.error('Invalid parameters: %r', request.args)
+        abort(400)
 
+    raise NotImplementedError
     translations = TranslationRepo().get_matching_translations(list_id, query)
     translations_dto = list(map(lambda t: t.dto_autocomplete(), translations))
 
@@ -36,10 +46,12 @@ def translations_autocomplete(list_id):
     return jsonify(translations=translations_dto)
 
 
-@ajax.route('/_create-new-card/<int:list_id>', methods=['POST'])
+@ajax.route('/create-new-card/<int:list_id>', methods=['POST'])
 def create_new_card(list_id):
     """
     Add word translation to cardlist with given `list_id`.
+
+    .. http:post:: /ajax/create-new-card/<int:list_id>
 
     :query translation_id:
 
